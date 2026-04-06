@@ -1,0 +1,78 @@
+﻿@model FinanceTracker.Models.Transactions
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Add Transactions</h2>
+
+<form method="post" class="form form-control">
+    <label class="form-check form-label">Amount</label>
+    <input asp-for="Amount" />
+    <br/>
+
+    <label>Type</label>
+    <select id="type" name="Type" class="form-control" onchange="updateCategory()">
+        <option value=""> -- SELECT -- </option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+    </select>
+    <br/>
+
+    <label>Category</label>
+    <select id="category" name="category" class="form-check form-select">
+        <option value="">-- SELECT --</option>      
+    <</select>
+    <br/>
+
+    <label>Date</label>
+    <input id="date" onsubmit="return validateForm()" asp-for="Dates" type="datetime-local" required/>
+    <span id="dateError" style="color:red; display:none";>Please Select Date</span>
+    <br/>
+    <button class="btn btn-success" type="submit">Save</button>
+</form>
+
+
+<script>
+ 
+document.addEventListener("DOMContentLoaded", function(){
+
+    var typeDropdown = document.getElementById("type");
+    var categoryDropdown = document.getElementById("category");
+
+    typeDropdown.addEventListener("change", function(){
+        var type = this.value;
+
+        categoryDropdown.innerHTML = '<option value=""> -- Select Category -- </option>';
+        categoryDropdown.disabled = false;
+
+        if(type==="Income"){
+            var incomeOptions = ["Salary", "Commission", "Stocks", "SIP", "Business","Wages", "Others"];
+
+            incomeOptions.forEach(function(item){
+                var opt = document.createElement("option");
+                opt.value = item;
+                opt.text = item;
+                categoryDropdown.appendChild(opt);
+            });
+        }
+        else if(type === "Expense"){
+            var expenseOptions = ["Travel", "Food", "Shopping", "Home Expense", "Bills", "Others"];
+
+            expenseOptions.forEach(function(item){
+                var opt = document.createElement("option");
+                opt.value = item;
+                opt.text = item;
+                categoryDropdown.appendChild(opt);
+            });
+        }
+
+        else{
+            categoryDropdown.disabled = true;
+        }
+   });
+});
+</script>

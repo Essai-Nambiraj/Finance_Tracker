@@ -1,0 +1,132 @@
+﻿@{
+    var path = Context.Request.Path.ToString();
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finance Tracker</title>
+    <link rel="stylesheet" href="..\wwwroot\css\site.css" />
+    @RenderSection("Styles", required: false)
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />   
+    <style>
+        /*Layout css*/
+        .btn{
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover{
+            transform: scale(1.05);
+        }      
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="nav navbar-expand-lg navbar-dark bg-dark shadow">
+        <div class="container-fluid">
+            <!--App TItIle-->
+            <span class="navbar-brand fw-bold"><h2>Finance Tracker</h2></span>
+           
+            @if (Context.Session.GetString("UserEmail") != null)
+            {
+                <!--Toggle-->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-toggler-icon">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!--Tabs-->
+                <div class="d-flex gap-1 collapse navbar-collapse" id="navbarNav">
+
+                    <!--Dashboard-->
+
+                    <form asp-controller="Transactions" asp-action="Dashboard" method="get">
+                        <button class="btn btn-outline-light @(path == "/Dashboard" ? "active-btn" : "")">
+                            Dashboard
+                        </button>
+                    </form>
+
+                    <!--Transactions-->
+
+                    <form asp-controller="Transactions" asp-action="Index" method="get">
+                        <button class="btn btn-outline-light @(path == "/Transactions" ? "active-btn" : "")">
+                            Transactions
+                        </button>
+                    </form>
+
+                    <!--Settings-->
+                    <button class="btn btn-outline-light">
+                        Settings
+                    </button>
+
+                    <!--Others-->
+                    <button class="btn btn-outline-light">
+                        Others
+                    </button>
+                </div>
+            }
+        </div>
+      
+        <div class="container-fluid" style="margin-left: 54%">
+            <span class="navbar-brand fw-bold">
+                <h2>
+                    @Context.Session.GetString("UserEmail")
+                </h2>
+            </span>
+            <div class="d-flex gap-2 collapse navbar-collapse" id="navbarNav">
+                <!--Theme day and nyt-->
+                <div class="theme-toggle">
+                    <label class="switch">
+                        <input type="checkbox" id="themeSwitch" />
+                        <span class="slider">                           
+                        </span>
+                        <span id="themeLabel" class="themeIcon">☀️</span>
+                    </label>
+                    
+                </div>
+
+                @if (Context.Session.GetString("UserEmail") != null)
+                {
+                    <form asp-controller="Account" asp-action="Logout" method="get" class="d-inline">
+                        <button class="btn btn-danger">Logout</button>
+                    </form>
+                }
+            </div>
+           
+        </div>
+        
+
+    </nav>
+    <div class="container mt-4">
+        @RenderBody()
+    </div>
+
+    <script>
+
+        const toggle = document.getElementById("themeSwitch");
+        const label = document.getElementById("themeLabel");
+
+        //Load Saved theme
+        if(localStorage.getItem("theme")==="dark"){
+            document.body.classList.add("dark-mode");
+            toggle.checked = true;
+            label.innerText = "🌙";
+        }
+
+        toggle.addEventListener("change", function(){
+            if(this.checked){
+                document.body.classList.add("dark-mode");
+                localStorage.setItem("theme", "dark");
+                label.innerText = "☀️";
+            } else{
+               document.body.classList.remove("dark-mode");
+               localStorage.setItem("theme", "light");
+               label.innerText = "🌙";
+            }
+        });
+
+    </script>
+
+</body>
+</html>
+

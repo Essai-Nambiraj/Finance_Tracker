@@ -1,0 +1,68 @@
+﻿@model List<FinanceTracker.Models.Transactions>
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Transactions</h2>
+
+<a class="btn btn-primary" href="/Transactions/Create">Add New</a>
+
+<form method="get" class="row g-3 mb-0 p-2">
+    <div class="col-md-2">
+        <label>Type</label>
+        <select name="type" class="form-control">
+            <option value="All">-- SELECT --</option>
+            <option value="Income">Income</option>
+            <option value="Expense">Expense</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <label>Category</label>
+        <input type="text" name="category" class="form-control" placeholder="Category" />
+    </div>
+
+    <div class="col-md-2">
+        <label>From</label>
+        <input type="date" name="fromDate" class="form-control" />
+    </div>
+
+    <div class="col-md-2">
+        <label>To</label>
+        <input type="date" name="toDate" class="form-control" />
+    </div>
+
+    <div class="col-md-5">
+        <label> </label>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/Transactions/Index" class="btn btn-secondary">Reset</a>
+    </div>
+
+</form>
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Update/Remove</th>
+    </tr>
+@foreach(var item in Model)
+{
+    <tr>
+        <td>@item.Amount</td>
+        <td>@item.Type</td>
+        <td>@item.Category</td>
+        <td>@item.Dates</td>
+        <td>
+            <a class="btn btn-warning" href="/Transactions/Edit/@item.Id">Update</a>
+            <a class="btn btn-danger" asp-asp-controller="Transactions" onclick="return confirm('Are you sure want to delete ?')" asp-action="Delete" asp-route-id="@item.Id">Remove</a>
+        </td>
+    </tr>       
+} 
+</table>

@@ -1,0 +1,17 @@
+﻿#Visual Studio
+bin/
+obj/
+.vs/
+
+#User specific files
+*.user
+*.suo
+
+#Logs
+*.log
+
+#OS files
+.DS_Store
+Thumbs.db
+
+addsettings.Development.json

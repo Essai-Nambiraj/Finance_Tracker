@@ -1,0 +1,139 @@
+﻿.summary-card {
+    border-radius: 40px;
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    box-shadow: 0.8px 8px rgba(0,0,0,0);
+    transition: all 0.3s ease;
+}
+
+.summary-card:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0.2,0,0,0.2);
+}
+
+.summary-item{
+    margin-bottom: 20px;
+}
+
+.summary-item span{
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.summary-item h4{
+    margin:0;
+    font-weight: bold;
+}
+
+/*Entry Animations*/
+.summary-card{
+    animation: fadeInUp 0.6s ease-in-out;
+}
+
+@keyframes fadeInUp{
+    from{
+        opacity:0;
+        transform: translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform: translateY(0px);
+    }
+}
+
+#myChart {
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-in-out;
+}
+
+#myChart:hover {
+    transform: translateY(-5px);
+}
+
+
+/*Toggle button for theme*/
+.switch{
+    position:relative;
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+}
+
+/*Hide default checkbox*/
+.switch input{
+    display:none;
+}
+
+/*Slider*/
+.slider{
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 25px;
+}
+
+/*Circle*/
+.slider:before{
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 3.5px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+/*ON state*/
+input:checked + .slider{
+    background-color: #007bff;
+}
+
+input:checked + .slider::before{
+    transform: translateX(24px);
+}
+
+/*Icon*/
+.themeIcon{
+    position: absolute;
+    left: 25px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+input:checked ~ .themeIcon{
+   left: 2px;
+}
+
+/*Dark mode*/
+body.dark-mode {
+    background-color: #121212 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .summary-card {
+    background-color: #1e1e1e !important;
+   
+}
+
+.dark-mode .summary-card:hover {
+    box-shadow: 0.8px 8px rgba(0,0,0,0);
+    transition: all 0.3s ease;
+}
+
+
+.dark-mode .table{
+    color: white;
+}
+
+
+/*Progress bar for budget */
+.progress-bar{
+    height: 20px;
+    transition: width 1s ease-in-out;
+}

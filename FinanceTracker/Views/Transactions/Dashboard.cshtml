@@ -1,0 +1,169 @@
+﻿@model FinanceTracker.Models.DashboardViewModel;
+@section Styles{
+    <link rel="stylesheet" href="~/css/dashboard.css"/>
+}
+
+@{
+    Layout= "~/Views/Shared/_Layout.cshtml";
+}
+
+<meta charset="UTF-8">
+
+<h2>
+    Dashboard
+</h2>
+
+<div class="row">
+    <!--Dashboard-->
+    <div class="col-md-4">
+        <div class="card text-white bg-success p-3 shadow">
+            <h4>Total Income: @Model.TotalIncome</h4>          
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success p-3 shadow">
+            <h4>Total Expense: @Model.TotalExpense</h4>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success p-3 shadow">
+            <h4>Balance: @(Model.Balance)</h4>
+        </div>
+    </div>
+
+    <!--Pie chart-->
+    <div class="col-md-6 m-4" style="max-width:460px; max-height:460px; margin:auto;">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    
+    <!--Quick Summary-->
+    <div class="col-md-6" style="margin-top:30px;">
+        <div class="card summary-card p-4">
+            <h2>Quick Summary</h2>
+            <div class="summary-item">
+                <h4>Highest Expense</h4>
+                <h4 class="text-danger"> @Model.HighestExpense</h4>
+            </div>
+            <div class="summary-item">
+                <h4>Top Category</h4>
+                <h4 class="text-primary">@Model.TopCategory</h4>
+            </div>
+            <div class="summary-item">
+                <h4>Savings Rate</h4>               
+                <h4 class="@(Model.SavingsRate < 30 ? "text-danger" : Model.SavingsRate < 60 ? "text-warning" : "text-success")">@Model.SavingsRate%</h4>
+
+                <!--Progress Bar-->
+                <div class="progress mt-2" style="height:14px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width:@Model.SavingsRate%"></div>
+                </div>
+            </div>          
+        </div>
+    </div>
+
+    <!--Monthly Bar graph-->
+    <h3 class="mt-5">Monthly Analytics</h3>
+    <canvas id="monthlyChart"></canvas>
+
+    <!--Budget Status-->
+    <div class="card p-3 shadow mt-4">
+        <h4> Budget Overview</h4>
+        <form method="post">
+            <input type="text" name="budget" placeholder="Enter Your Budget" class="form-control w-25" required /><br />
+            <button class="btn btn-primary" asp-controller="Transactions" asp-action="Dashboard">Set</button>
+        </form>
+        <p><b>Budget: </b> @ViewBag.Budget</p>
+        <p><b>Expense: </b> @ViewBag.TotalExpense</p>
+
+        <!--Warning message-->
+        @if(ViewBag.BudgetStatus == "Exceeded"){
+            <div class="alert alert-danger">
+                ⚠️ Budget Exceeded!
+            </div>
+        }
+        else if(ViewBag.BudgetStatus == "Warning")
+        {
+            <div class="alert alert-warning">
+                &#128308 You have used more tha 80% of your budget
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-success">
+                💵 Safe, Within Budget.
+            </div>
+        }
+
+        <!--Progress Bar-->
+        <div class="progress mt-3">
+            <div class="progress-bar
+                @(ViewBag.BudgetStatus == "Exceeded" ? "bg-danger" : 
+                  ViewBag.BudgetStatus == "Warning" ? "bg-warning" :
+                  "bg-success")" 
+            style="width: @(ViewBag.BudgetUsed)%; margin-bottom: 30px;">
+            @ViewBag.BudgetUsed%
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var ctx = document.getElementById('myChart');
+    var ctxx = document.getElementById('monthlyChart');
+
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels:['Income', 'Expense'],
+            datasets: [{
+                data: [@Model.TotalIncome, @Model.TotalExpense],
+                background:['#198744','#dc3545']
+            }]
+        }
+    });
+
+    var monthlyChart = new Chart(ctxx, {
+        type:'bar',
+        barPercentage: 0.6,
+        data:{
+            labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Months)),
+            datasets: [
+                {
+                label: 'Income',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.IncomeList)),
+                backgroundColor: ['#198744'],
+                borderColor: '#198744',
+                borderWidth: 1
+            },
+            {
+                label: 'Expense',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ExpenseList)),
+                backgroundColor: ['#dc3545'],
+                borderColor: '#dc3545',
+                borderWidth: 1
+            },
+            {
+                label: 'Savings',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.SavingsList)),
+                backgroundColor: ['#0d6efd'],
+                borderColor: '#0d6efd',
+                borderWidth: 1
+            }
+            ]
+        },
+        options:{
+            responsive: true,
+            plugins:{
+                legend:{
+                    position: 'top'
+                }             
+            }
+        }
+    });
+</script>
+
+
+
+

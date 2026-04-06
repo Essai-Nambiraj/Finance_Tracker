@@ -1,0 +1,12 @@
+﻿@model FinanceTracker.Models.Transactions;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>Login</h1>
+
+<form method="post">
+    <input type="text" name="email" placeholder="Enter Resistered Email" class="form-control" required /><br />
+    <input type="password" name="password" placeholder="Enter Password"  class="form-control" required/> <br />
+    <button class="btn btn-primary">Login</button>
+    <button class="btn" asp-controller="Account" asp-action="Register"  onclick="window.location.href='/Account/Register'" >New User</button>
+</form>

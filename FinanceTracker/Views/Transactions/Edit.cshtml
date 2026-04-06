@@ -1,0 +1,35 @@
+﻿@model FinanceTracker.Models.Transactions
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Transactions</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="Id" />
+    <label>Amount</label>
+    <input asp-for="Amount" />
+    <br />
+
+    <label>Type</label>
+    <select asp-for="Type">
+        <option>Income</option>
+        <option>Expense</option>
+    </select>
+    <br />
+
+    <label>Category</label>
+    <input asp-for="Category" />
+    <br/>
+
+    <label>Date</label>
+    <input asp-for="Dates" type="datetime-local" />
+    <br/>
+
+    <button type="submit">Update</button>
+
+</form>
