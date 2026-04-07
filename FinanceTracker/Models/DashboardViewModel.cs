@@ -10,6 +10,10 @@
         public string? TopCategory { get; set; }
         public decimal SavingsRate { get; set; }
 
-        public decimal? Budget { get; set; }
+
+        //for Budget Overview
+        public decimal BudgetUsed { get; set; }
+        public string BudgetStatus { get; set; }
+        public decimal Budget { get; set; }
     }
 }

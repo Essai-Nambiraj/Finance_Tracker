@@ -3,6 +3,7 @@ using FinanceTracker.Data;
 using FinanceTracker.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace FinanceTracker.Controllers
 {
@@ -209,6 +210,77 @@ namespace FinanceTracker.Controllers
             ViewBag.BudgetStatus = budgetStatus;
             
             return View(model);
+        }
+
+        public IActionResult Budget()
+        {
+            var userID = _user.UserId;
+            if (userID == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.User_Id == userID);
+
+            var data = _context.Transactions
+               .Where(x => x.User_Id == userID)
+               .ToList();
+
+            var totalExpense = data
+                .Where(x => x.Type == "Expense")
+                .Sum(x => x.Amount);
+
+            var bud = user.Budget;      //Users.Budget
+
+            decimal budgetUsed = 0;
+            if (bud > 0)
+            {
+                budgetUsed = Math.Round((totalExpense / bud) * 100, 2);
+            }
+
+            string status = "";
+            if (totalExpense > bud)
+            {
+                status = "Exceeded";
+            }
+            else if (budgetUsed >= 80)
+            {
+                status = "Warning";
+            }
+            else if(budgetUsed < 80)
+            {
+                status = "Safe";
+            }
+            else
+            {
+                status = "Invalid Budget";
+            }
+
+            var model = new DashboardViewModel
+            {
+                TotalExpense = totalExpense,
+                Budget = bud,         //DashboardViewModel
+                BudgetUsed = budgetUsed,
+                BudgetStatus = status
+            };
+
+            //var models = new DashboardViewModel { Budget = user.Budget };
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Budget(DashboardViewModel b)
+        {
+
+            var userId = _user.UserId;                   
+            var user = _context.Users.FirstOrDefault(u => u.User_Id == userId);
+
+            if (user != null)
+            {
+                user.Budget = b.Budget;           //Users.Budget = Dashboard.ViewModel.Budget
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Budget");
         }
     }
 }

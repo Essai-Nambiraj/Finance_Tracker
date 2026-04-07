@@ -54,10 +54,13 @@
                         </button>
                     </form>
 
-                    <!--Settings-->
-                    <button class="btn btn-outline-light">
-                        Settings
-                    </button>
+                    <!--Budget-->
+                    <form asp-controller="Transactions" asp-action="Budget" method="get">
+                        <button class="btn btn-outline-light @(path == "/Transactions" ? "active-btn" : "")">
+                            Budget
+                        </button>
+                    </form>
+                    
 
                     <!--Others-->
                     <button class="btn btn-outline-light">
@@ -70,7 +73,7 @@
         <div class="container-fluid" style="margin-left: 54%">
             <span class="navbar-brand fw-bold">
                 <h2>
-                    @Context.Session.GetString("UserEmail")
+                    @Context.Session.GetString("Budget")
                 </h2>
             </span>
             <div class="d-flex gap-2 collapse navbar-collapse" id="navbarNav">

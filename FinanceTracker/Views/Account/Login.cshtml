@@ -1,4 +1,13 @@
-﻿@model FinanceTracker.Models.Transactions;
+﻿@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@model FinanceTracker.Models.Transactions;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -7,6 +16,6 @@
 <form method="post">
     <input type="text" name="email" placeholder="Enter Resistered Email" class="form-control" required /><br />
     <input type="password" name="password" placeholder="Enter Password"  class="form-control" required/> <br />
-    <button class="btn btn-primary">Login</button>
-    <button class="btn" asp-controller="Account" asp-action="Register"  onclick="window.location.href='/Account/Register'" >New User</button>
+    <button class="btn btn-success">Login</button>
+    <button class="btn btn-primary" asp-controller="Account" asp-action="Register"  onclick="window.location.href='/Account/Register'" >New User</button>
 </form>

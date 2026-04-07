@@ -133,7 +133,31 @@ body.dark-mode {
 
 
 /*Progress bar for budget */
-.progress-bar{
-    height: 20px;
+.my-progress{
+    height: 36px !important;
+    border-radius: 25px;
+    background-color: #e9ecef;
+    overflow: hidden;
+}
+
+.my-bar{
+    height: 37px !important;
+    line-height: 36px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    border-radius: 25px;
     transition: width 1s ease-in-out;
+}
+
+.safe {
+    background: linear-gradient(90deg, #7AFF70, #31CF00);
+}
+
+.warning {
+    background: linear-gradient(90deg,#ffd200, #f7971e );
+}
+
+.danger{
+    background: linear-gradient(90deg, #ff6969, red);
 }

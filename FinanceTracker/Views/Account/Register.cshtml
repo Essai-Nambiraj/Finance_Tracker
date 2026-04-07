@@ -1,4 +1,12 @@
-﻿<h1>Register</h1>
+﻿@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Register</h1>
 
 <form method="post">
     <input type="text" name="email" placeholder="Enter Email Id" class="form-control"  required/><br />

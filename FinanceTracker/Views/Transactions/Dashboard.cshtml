@@ -67,46 +67,7 @@
     <h3 class="mt-5">Monthly Analytics</h3>
     <canvas id="monthlyChart"></canvas>
 
-    <!--Budget Status-->
-    <div class="card p-3 shadow mt-4">
-        <h4> Budget Overview</h4>
-        <form method="post">
-            <input type="text" name="budget" placeholder="Enter Your Budget" class="form-control w-25" required /><br />
-            <button class="btn btn-primary" asp-controller="Transactions" asp-action="Dashboard">Set</button>
-        </form>
-        <p><b>Budget: </b> @ViewBag.Budget</p>
-        <p><b>Expense: </b> @ViewBag.TotalExpense</p>
-
-        <!--Warning message-->
-        @if(ViewBag.BudgetStatus == "Exceeded"){
-            <div class="alert alert-danger">
-                ⚠️ Budget Exceeded!
-            </div>
-        }
-        else if(ViewBag.BudgetStatus == "Warning")
-        {
-            <div class="alert alert-warning">
-                &#128308 You have used more tha 80% of your budget
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-success">
-                💵 Safe, Within Budget.
-            </div>
-        }
-
-        <!--Progress Bar-->
-        <div class="progress mt-3">
-            <div class="progress-bar
-                @(ViewBag.BudgetStatus == "Exceeded" ? "bg-danger" : 
-                  ViewBag.BudgetStatus == "Warning" ? "bg-warning" :
-                  "bg-success")" 
-            style="width: @(ViewBag.BudgetUsed)%; margin-bottom: 30px;">
-            @ViewBag.BudgetUsed%
-            </div>
-        </div>
-    </div>
+    
 </div>
 
 <script>

@@ -1,0 +1,68 @@
+﻿@model FinanceTracker.Models.DashboardViewModel;
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>Budget Overview</h2>
+
+<!--Budget Status-->
+<div class="card p-3 shadow mt-4">
+    <h4>Set Budget</h4>
+    <form method="post" asp-action="Budget">
+        <input type="text" name="budget" placeholder="Enter Your Budget" class="form-control w-25" required /><br />
+        <button class="btn btn-primary" asp-controller="Transactions" asp-action="Budget">Set</button>
+    </form>
+
+    
+    @if(Model.Budget != 0)
+    {
+        <p><b>Budget: </b> @Model.Budget</p>
+        <p><b>Expense: </b> @Model.TotalExpense</p>
+        <p><b>Used: </b> @Model.BudgetUsed%</p>
+
+        <!--Warning message-->
+        @if (Model.BudgetStatus == "Exceeded")
+        {
+            <div class="alert alert-danger">
+                ⚠️ Budget Exceeded!
+            </div>
+        }
+        else if (Model.BudgetStatus == "Warning")
+        {
+            <div class="alert alert-warning">
+                &#128308 You have used more tha 80% of your budget
+            </div>
+        }
+        else if(Model.BudgetStatus == "Safe")
+        {
+            <div class="alert alert-success">
+                💵 Safe, Within Budget.
+            </div>
+        }
+
+        <!--Progress Bar-->
+        <div class="progress my-progress">
+            <div class="progress-bar my-bar
+                @(Model.BudgetStatus == "Exceeded" ? "danger" :
+                  Model.BudgetStatus == "Warning" ? "warning" :
+                  "safe")"
+                 style="width: @(Model.BudgetUsed)%; margin-bottom: 30px;">
+                <h4>@Model.BudgetUsed%</h4>
+            </div>
+        </div>
+    }
+    else
+    {
+        <br />
+        <h2>Budget Didn&apos;t set, SET BUDGET FIRST</h2>
+    }
+
+
+</div>
