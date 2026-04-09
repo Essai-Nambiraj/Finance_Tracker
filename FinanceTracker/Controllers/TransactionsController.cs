@@ -108,7 +108,7 @@ namespace FinanceTracker.Controllers
         }
 
         //Dashboard
-        public IActionResult Dashboard()
+        public IActionResult Dashboard(int month, int year)
         {
             var userId = _user.UserId;
 
@@ -147,6 +147,116 @@ namespace FinanceTracker.Controllers
                 : Math.Round((decimal)balance / totalIncome * 
                 100, 2);
 
+
+            //Income wise
+            var totalSalary = data
+                .Where(x => x.Type == "Income" && x.Category == "Salary")
+                .Sum(x => x.Amount);
+            var TotalCommission = data
+                .Where(x => x.Type == "Income" && x.Category == "Commission")
+                .Sum(x => x.Amount);
+            var TotalStocks = data
+                .Where(x => x.Type == "Income" && x.Category == "Stocks")
+                .Sum(x => x.Amount);
+            var TotalSIP = data
+                .Where(x => x.Type == "Income" && x.Category == "SIP")
+                .Sum(x => x.Amount);
+            var TotalBusiness = data
+                .Where(x => x.Type == "Income" && x.Category == "Business")
+                .Sum(x => x.Amount);
+            var TotalWages = data
+                .Where(x => x.Type == "Income" && x.Category == "Wages")
+                .Sum(x => x.Amount);
+            var TotalIncomeOthers = data
+                .Where(x => x.Type == "Income" && x.Category == "Others")
+                .Sum(x => x.Amount);
+
+            //Expense Wise
+            var totalShopping = data
+                .Where(x => x.Type == "Expense" && x.Category == "Shopping")
+                .Sum(x => x.Amount);
+            var totalFood = data
+                .Where(x => x.Type == "Expense" && x.Category == "Food")
+                .Sum(x => x.Amount);
+            var totalTravel = data
+                .Where(x => x.Type == "Expense" && x.Category == "Travel")
+                .Sum(x => x.Amount);
+            var totalHome = data
+                .Where(x => x.Type == "Expense" && x.Category == "Home Expense")
+                .Sum(x => x.Amount);
+            var totalBills = data
+                .Where(x => x.Type == "Expense" && x.Category == "Bills")
+                .Sum(x => x.Amount);
+            var totalExpOther = data
+                .Where(x => x.Type == "Expense" && x.Category == "Others")
+                .Sum(x => x.Amount);
+
+            //Date wise category bar
+
+            int years = 2026;
+            int months = 4;
+
+            var daysInMonth = DateTime.DaysInMonth(years, months);
+
+            var allDates = Enumerable.Range(1, daysInMonth)
+                .Select(day => new DateTime(years, months, day))
+                .ToList();
+
+            var dateData = data
+                .Where(x => x.Dates.Year == years && x.Dates.Month == months)
+                .ToList();
+
+            var categories = dateData
+                .Select(x => x.Category)
+                .Distinct()
+                .ToList();
+
+            var datasets = new List<object>();
+
+            foreach(var category in categories)
+            {
+                var values = new List<decimal>();
+                foreach(var date in allDates)
+                {
+                    var total = dateData
+                        .Where(x => x.Category == category && x.Dates.Date == date)
+                        .Sum(x => x.Amount);
+
+                    values.Add(total);  //if no data -> 0 automatically
+                }
+
+                datasets.Add(new
+                {
+                    label = category,
+                    data = values
+                });
+            }
+
+            var dateLabels = allDates
+                .GroupJoin(
+                data,
+                d => d.Date,
+                t => t.Dates.Date,
+                (d, transactions) => new
+                {
+                    Date = d,
+                    Income = transactions
+                    .Where(x => x.Type == "Income")
+                    .Sum(x => x.Amount),
+
+                    Expense = transactions
+                    .Where(x => x.Type == "Expense")
+                    .Sum(x => x.Amount)
+                })
+                .OrderBy(x => x.Date)
+                .ToList();
+
+            var dLabels = dateLabels
+                .Select(X => X.Date.ToString("dd MMM"))
+                .ToList();
+
+            
+
             var model = new DashboardViewModel
             {
                 TotalIncome = totalIncome,
@@ -154,11 +264,33 @@ namespace FinanceTracker.Controllers
                 Balance = balance,
                 HighestExpense = highestExpense,
                 TopCategory = topCategory,
-                SavingsRate = savingsRate
+                SavingsRate = savingsRate,
+
+                //Income wise data to View
+                TotalSalary = totalSalary,
+                TotalCommission = TotalCommission,
+                TotalStocks = TotalStocks,
+                TotalSIP = TotalSIP,
+                TotalBusiness = TotalBusiness,
+                TotalWages = TotalWages,
+                TotalIncomeOthers = TotalIncomeOthers,
+
+                //Expense wise data to View
+                TotalShopping = totalShopping,
+                TotalFood = totalFood,
+                TotalTravel = totalTravel,
+                TotalHome = totalHome,
+                TotalBills = totalBills,
+                TotalExpOthers = totalExpOther,
+
+                DateLabels = dLabels,
+                ChartDataSets = datasets
             };
 
            /* ViewBag.Income = totalIncome;
             ViewBag.Expense = totalExpense;*/
+
+
             //Monthly Grouping
             var monthlyData = data
                 .GroupBy(x => new { x.Dates.Year, x.Dates.Month })
@@ -208,9 +340,45 @@ namespace FinanceTracker.Controllers
             ViewBag.Budget = budget;
             ViewBag.BudgetUsed = budgetUsedPercentage;
             ViewBag.BudgetStatus = budgetStatus;
+
+            ViewBag.TotalSalary = totalSalary;
             
             return View(model);
         }
+
+        //[HttpGet]
+        //public JsonResult GetMonthlyData(int month, int year)
+        //{
+
+        //    var userId = _user.UserId;
+        //    //Monthly Analytices for day wise for partcilar month and year
+        //    int selectedMonth = month;
+        //    int selectedYear = year;
+
+        //    var transactions = _context.Transactions
+        //        .Where(t => t.User_Id == userId && t.Dates.Month == selectedMonth && t.Dates.Year == selectedYear)
+        //        .ToList();
+
+        //    //Group by day nd calculate income and expense
+        //    var result = transactions
+        //        .GroupBy(t => t.Dates.Day)
+        //        .Select(g => new
+        //        {
+        //            day = g.Key, //Day number(1-31)
+
+        //            //Total income of the particular day
+        //            income = g.Where(t => t.Type == "Income")
+        //            .Sum(x => x.Amount),
+
+        //            //TOtal expense
+        //            expense = g.Where(t => t.Type == "Expense")
+        //            .Sum(x => x.Amount),
+        //        })
+        //        .OrderBy(x => x.day)
+        //        .ToList();
+
+        //    return Json(result);
+        //}
 
         public IActionResult Budget()
         {

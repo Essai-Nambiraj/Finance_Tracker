@@ -8,7 +8,7 @@
 }
 
 <meta charset="UTF-8">
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <h2>
     Dashboard
 </h2>
@@ -64,15 +64,62 @@
     </div>
 
     <!--Monthly Bar graph-->
+   
     <h3 class="mt-5">Monthly Analytics</h3>
+    <!--Month
+    <select name="month" class="form-control mt-2 w-25 me-1" onchange="this.form.submit()">
+        <option value=""> -- Select Month --</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">MARCH</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">NOVEMBER</option>
+        <option value="12">December</option>
+    </select>-->
+
+    <!--Year
+    <select name="year" class="form-control mt-2 w-25" onchange="this.form.submit()">
+        <option value=""> Select Year </option>
+
+        for (int i = DateTime.Now.Year; i >= 2000; i--)
+        {
+            <option value="i">i</option>
+        }
+    </select> -->
+
+    <!--Buttons to switch between pie ad bar-->
+    <button onclick="setChartType('bar')">Bar</button>
+    <button onclick="setChartType('pie')">Pie</button>
+
     <canvas id="monthlyChart"></canvas>
 
-    
+    <div class="col-md-6 m-4" style="max-width:600px; max-height:600px; margin:auto;">
+        <canvas id="wiseChart"></canvas>
+    </div>
+
+    <div style=" height:400px">
+        <canvas id="barChart"></canvas>
+
+    </div>
+   
 </div>
 
 <script>
+    //Prevent chart overwrite issue
+    
+    const ctxCategory = document.getElementById('barChart');
+
+    /* For Monthwise charts */
     var ctx = document.getElementById('myChart');
     var ctxx = document.getElementById('monthlyChart');
+    var ctxxx = document.getElementById('wiseChart');
+   
 
     var myChart = new Chart(ctx, {
         type: 'pie',
@@ -119,10 +166,47 @@
             plugins:{
                 legend:{
                     position: 'top'
-                }             
+                }
             }
         }
     });
+
+    var wiseChart = new Chart(ctxxx, {
+        type: 'pie',
+        data: {
+            labels:['Salary','Commission','Stocks','SIP','Business','Wages','Other Income', 'Home Expenses','Shopping',
+                    'Food','Travel','Bills','Other Expense'],
+            datasets: [{
+                data: [@Model.TotalSalary, @Model.TotalCommission, @Model.TotalStocks, @Model.TotalSIP,
+                    @Model.TotalBusiness, @Model.TotalWages, @Model.TotalIncomeOthers,@Model.TotalHome, @Model.TotalShopping,
+                    @Model.TotalFood, @Model.TotalTravel, @Model.TotalBills, @Model.TotalExpOthers],
+                background:['#198744','#dc3545']
+            }]
+        }
+    });
+
+    var dateLabels = @Html.Raw(Json.Serialize(Model.DateLabels ?? new List<string>()));
+    var categoryData = @Html.Raw(Json.Serialize(Model.ChartDataSets ?? new List<object>()));
+    if(ctxCategory  && dateLabels.length > 0){
+        const barChart = new Chart(ctxCategory, {
+            type: 'bar',
+            data: {
+                labels: dateLabels,
+                datasets: categoryData
+            },
+            options:{
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+    else{
+        console.log("No data for category chart");
+    }
+    
+
+    
+  
 </script>
 
 
