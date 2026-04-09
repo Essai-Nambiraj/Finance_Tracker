@@ -66,51 +66,75 @@
     <!--Monthly Bar graph-->
    
     <h3 class="mt-5">Monthly Analytics</h3>
-    <!--Month
-    <select name="month" class="form-control mt-2 w-25 me-1" onchange="this.form.submit()">
-        <option value=""> -- Select Month --</option>
-        <option value="1">January</option>
-        <option value="2">February</option>
-        <option value="3">MARCH</option>
-        <option value="4">April</option>
-        <option value="5">May</option>
-        <option value="6">June</option>
-        <option value="7">July</option>
-        <option value="8">August</option>
-        <option value="9">September</option>
-        <option value="10">October</option>
-        <option value="11">NOVEMBER</option>
-        <option value="12">December</option>
-    </select>-->
-
-    <!--Year
-    <select name="year" class="form-control mt-2 w-25" onchange="this.form.submit()">
-        <option value=""> Select Year </option>
-
-        for (int i = DateTime.Now.Year; i >= 2000; i--)
-        {
-            <option value="i">i</option>
-        }
-    </select> -->
-
-    <!--Buttons to switch between pie ad bar-->
-    <button onclick="setChartType('bar')">Bar</button>
-    <button onclick="setChartType('pie')">Pie</button>
-
+   
     <canvas id="monthlyChart"></canvas>
+
 
     <div class="col-md-6 m-4" style="max-width:600px; max-height:600px; margin:auto;">
         <canvas id="wiseChart"></canvas>
     </div>
+
+
+    <form method="get" asp-controller="Transactions" asp-action="Dashboard">
+        <select name="month" class="form-control mt-2 w-25 me-1">
+            <option value=""> Select Month </option>
+            @for(int m=1; m<=12; m++)
+                {
+                    if (ViewBag.SelectedMonth == m)
+                    {
+                    <option value="@m">
+                        @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                    </option>
+                    }
+                    else
+                    {
+                        <option value="@m">
+                            @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                        </option>
+                    }
+                }
+            </select>
+
+        <select name="year" class="form-control mt-2 w-25">
+            <option value=""> Select Year </option>
+
+            @for (int i = DateTime.Now.Year; i >= 2000; i--)
+            {
+                    if(ViewBag.SelectedYear == i)
+                    {
+                    <option value="@i" selected>@i</option>
+                    }
+                    else
+                    {
+                    <option value="@i">@i</option>
+                    }
+                    
+            }
+        </select>
+        <button type="submit" class="btn btn-primary mt-2">Show</button>
+    </form>
+    
+    <!--Buttons to switch between pie ad bar
+    <button onclick="setChartType('bar')">Bar</button>
+    <button onclick="setChartType('pie')">Pie</button>-->
+
 
     <div style=" height:400px">
         <canvas id="barChart"></canvas>
 
     </div>
    
+    <div style=" height:400px">
+        <canvas id="categoryDateChart"></canvas>
+
+    </div>
+
 </div>
 
 <script>
+
+    let chart;//global chart
+
     //Prevent chart overwrite issue
     
     const ctxCategory = document.getElementById('barChart');
@@ -184,6 +208,51 @@
             }]
         }
     });
+
+    /*
+    function loadChart(month, year){
+        fetch(`/Transactions/GetChartData?month=${month}&year=${year}`)
+        .then(res => res.json())
+        .then(data => {
+            const ctxCategory = document.getElementById('categoryDateChart').getContext('2d');
+
+            //destroy old chart
+            if(chart){
+                chart.destroy();
+            }
+
+            chart = new Chart(ctxCategory, {
+                type: 'bar',
+                data:{
+                    labels: data.labels,
+                    datasets: data.datasets
+                },
+                options:{
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        });
+    }
+
+    //OnDropDownCHange
+    document.getElementById("monthSelect").addEventListener("change", triggerLoad);
+    document.getElementById("yearSelect").addEventListener("change", triggerLoad);
+
+    function triggerLoad(){
+        const month =  document.getElementById("monthSelect").value;
+        const year =  document.getElementById("yearSelect").value;
+
+        loadChart(month, year);
+    }
+
+    //Load Default on page load
+    window.onload = function(){
+       const month =  document.getElementById("monthSelect").value;
+        const year =  document.getElementById("yearSelect").value;
+
+        loadChart(month, year);
+    };*/
 
     var dateLabels = @Html.Raw(Json.Serialize(Model.DateLabels ?? new List<string>()));
     var categoryData = @Html.Raw(Json.Serialize(Model.ChartDataSets ?? new List<object>()));

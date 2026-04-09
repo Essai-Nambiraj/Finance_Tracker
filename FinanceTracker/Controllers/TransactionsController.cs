@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using FinanceTracker.Data;
+﻿using FinanceTracker.Data;
 using FinanceTracker.Models;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.Data.SqlClient.DataClassification;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Linq;
+using System.Reflection.Emit;
 
 namespace FinanceTracker.Controllers
 {
@@ -107,8 +109,56 @@ namespace FinanceTracker.Controllers
             return RedirectToAction("Dashboard");
         }
 
+        /*//Dropdown Month ad Year
+        [HttpGet]
+        public IActionResult GetChartData(int month, int year){
+
+            var data = _context.Transactions.ToList();
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            var allDates = Enumerable.Range(1, daysInMonth)
+                .Select(day => new DateTime(year, month, day))
+                .ToList();
+
+            var dateData = data
+                .Where(x => x.Dates.Year == year && x.Dates.Month == month)
+                .ToList();
+
+            var categories = data
+                .Select(x => x.Category)
+                .Distinct()
+                .ToList();
+
+            var datasets = new List<object>();
+
+            foreach(var category in categories)
+            {
+                var values = new List<decimal>();
+                foreach(var date in allDates)
+                {
+                    var total = dateData
+                   .Where(x => x.Category == category && x.Dates.Date == date.Date)
+                   .Sum(x => x.Amount);
+
+                    values.Add(total);
+                }
+
+                datasets.Add(new
+                {
+                    label = category,
+                    data = values
+                });
+               
+            }
+
+            var labels = allDates
+                .Select(x => x.ToString("dd MMM"))
+                .ToList();
+
+            return Json(new {labels, datasets});
+        }*/
+
         //Dashboard
-        public IActionResult Dashboard(int month, int year)
+        public IActionResult Dashboard(int? month, int? year)
         {
             var userId = _user.UserId;
 
@@ -193,10 +243,11 @@ namespace FinanceTracker.Controllers
 
             //Date wise category bar
 
-            int years = 2026;
-            int months = 4;
+            int years = year ?? DateTime.Now.Year;
+            int months = month ?? DateTime.Now.Month;
 
-            var daysInMonth = DateTime.DaysInMonth(years, months);
+
+            int daysInMonth = DateTime.DaysInMonth(years, months);
 
             var allDates = Enumerable.Range(1, daysInMonth)
                 .Select(day => new DateTime(years, months, day))
@@ -210,6 +261,8 @@ namespace FinanceTracker.Controllers
                 .Select(x => x.Category)
                 .Distinct()
                 .ToList();
+
+            
 
             var datasets = new List<object>();
 
@@ -225,12 +278,26 @@ namespace FinanceTracker.Controllers
                     values.Add(total);  //if no data -> 0 automatically
                 }
 
+               
+
                 datasets.Add(new
                 {
                     label = category,
                     data = values
                 });
+
             }
+
+
+            if (!datasets.Any())
+            {
+                datasets.Add(new
+                {
+                    label = " No Data",
+                    data = allDates.Select(d => 0).ToList(),
+                    backgroundColor="#cccccc"
+                });
+                }
 
             var dateLabels = allDates
                 .GroupJoin(
@@ -342,7 +409,11 @@ namespace FinanceTracker.Controllers
             ViewBag.BudgetStatus = budgetStatus;
 
             ViewBag.TotalSalary = totalSalary;
-            
+
+
+            ViewBag.SelectedMonth = month;
+            ViewBag.SelectedYear = year;
+
             return View(model);
         }
 
