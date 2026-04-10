@@ -10,7 +10,7 @@ namespace FinanceTracker.Data
         {
         }
 
-        public DbSet<Transactions> Transactions { get; set; }
+        public DbSet<Transactions> Transactions { get; set; }   //DbSet<Transactions> -> Transactions is class name inside model and Another Transactions is Table name
         public DbSet<Users> Users { get; set; }
     }
 }
